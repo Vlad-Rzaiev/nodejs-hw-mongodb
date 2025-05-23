@@ -26,6 +26,6 @@ export const parseFilterParams = (query) => {
 
   return {
     isFavorite: parsedFavorite,
-    contactType: parsedContactType,
+    type: parsedContactType,
   };
 };
