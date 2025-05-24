@@ -6,7 +6,7 @@ export const getAllContacts = async ({
   perPage,
   sortBy,
   sortOrder,
-  isFavorite,
+  isFavourite,
   type,
 }) => {
   const limit = perPage;
@@ -14,8 +14,8 @@ export const getAllContacts = async ({
 
   const contactsQuery = ContactsCollection.find();
 
-  if (isFavorite !== undefined) {
-    contactsQuery.where('isFavorite').equals(isFavorite);
+  if (isFavourite !== undefined) {
+    contactsQuery.where('isFavourite').equals(isFavourite);
   }
   if (type !== undefined) {
     contactsQuery.where('contactType').equals(type);
