@@ -28,7 +28,7 @@ export const createContactSchema = Joi.object({
       'string.email': 'Invalid email format',
       'string.empty': 'Email cannot be empty',
     }),
-  isFavorite: Joi.boolean().default(false),
+  isFavourite: Joi.boolean().default(false),
   contactType: Joi.string()
     .valid('work', 'home', 'personal')
     .required()
@@ -66,7 +66,7 @@ export const updateContactSchema = Joi.object({
       'string.email': 'Invalid email format',
       'string.empty': 'Email cannot be empty',
     }),
-  isFavorite: Joi.boolean().default(false),
+  isFavourite: Joi.boolean().default(false),
   contactType: Joi.string()
     .valid('work', 'home', 'personal')
     .default('personal')
