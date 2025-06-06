@@ -1,5 +1,5 @@
 import express from 'express';
-// import pino from 'pino-http';
+import pino from 'pino-http';
 import cors from 'cors';
 import router from './routes/index.route.js';
 import cookieParser from 'cookie-parser';
@@ -16,13 +16,13 @@ export const setupServer = () => {
   app.use(cors());
   app.use(cookieParser());
 
-  // app.use(
-  //   pino({
-  //     transport: {
-  //       target: 'pino-pretty',
-  //     },
-  //   }),
-  // );
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+      },
+    }),
+  );
 
   app.use('/uploads', express.static(UPLOAD_DIR));
 
