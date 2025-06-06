@@ -56,7 +56,7 @@ export const createContactController = async (req, res) => {
   const newContact = {
     userId: req.user._id,
     ...req.body,
-    ...(avatarUrl && { avatar: avatarUrl }),
+    ...(avatarUrl && { photo: avatarUrl }),
   };
   const result = await createContact(newContact);
 
@@ -75,7 +75,7 @@ export const patchContactController = async (req, res) => {
 
   const payload = {
     ...req.body,
-    ...(avatarUrl && { avatar: avatarUrl }),
+    ...(avatarUrl && { photo: avatarUrl }),
   };
 
   const result = await patchContact(contactId, payload, userId);
