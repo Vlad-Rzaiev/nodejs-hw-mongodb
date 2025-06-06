@@ -18,6 +18,10 @@ const contactSchema = new Schema(
     email: {
       type: String,
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
     isFavourite: {
       type: Boolean,
       default: false,

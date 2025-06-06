@@ -161,6 +161,14 @@ export const resetPassword = async (token, password) => {
     throw createHttpError(404, 'User not found.');
   }
 
+  const isEqual = await bcrypt.compare(password, user.password);
+  if (isEqual) {
+    throw createHttpError(
+      400,
+      'New password cannot be the same as the current password.',
+    );
+  }
+
   const encryptedPassword = await bcrypt.hash(password, 10);
 
   await UsersCollection.updateOne(

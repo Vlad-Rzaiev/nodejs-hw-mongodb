@@ -9,6 +9,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { getAvatarUrl } from '../utils/getAvatarUrl.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -50,9 +51,12 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const createContactController = async (req, res) => {
+  const avatarUrl = await getAvatarUrl(req.file);
+
   const newContact = {
     userId: req.user._id,
     ...req.body,
+    avatar: avatarUrl,
   };
   const result = await createContact(newContact);
 
@@ -66,7 +70,15 @@ export const createContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
   const userId = req.user._id;
-  const result = await patchContact(contactId, req.body, userId);
+
+  const avatarUrl = await getAvatarUrl(req.file);
+
+  const payload = {
+    ...req.body,
+    ...(avatarUrl && { avatar: avatarUrl }),
+  };
+
+  const result = await patchContact(contactId, payload, userId);
 
   if (!result) {
     throw createHttpError(404, 'Contact not found!');
