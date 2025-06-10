@@ -89,6 +89,12 @@ export const refreshUserSession = async (sessionId, refreshToken) => {
 };
 
 export const logoutUser = async (sessionId) => {
+  const session = await SessionsCollection.findOne({ _id: sessionId });
+
+  if (!session) {
+    throw createHttpError(404, 'Session not foun  d');
+  }
+
   await SessionsCollection.deleteOne({ _id: sessionId });
 };
 
@@ -141,12 +147,40 @@ export const sendResetToken = async (email) => {
   }
 };
 
-export const resetPassword = async (payload) => {
+export const resetPassword = async (token, password) => {
+  let entries;
   try {
-    const entries = jwt.verify(payload.token, getEnvVar('JWT_SECRET'));
+    entries = jwt.verify(token, getEnvVar('JWT_SECRET'));
   } catch (err) {
-    if (err.status) throw err;
-    if (err instanceof Error) throw createHttpError(401, err.message);
+    if (err instanceof Error)
+      throw createHttpError(401, 'Token is expired or invalid.', {
+        cause: err,
+      });
     throw err;
   }
+
+  const user = await UsersCollection.findOne({
+    _id: entries.sub,
+    email: entries.email,
+  });
+  if (!user) {
+    throw createHttpError(404, 'User not found.');
+  }
+
+  const isEqual = await bcrypt.compare(password, user.password);
+  if (isEqual) {
+    throw createHttpError(
+      400,
+      'New password cannot be the same as the current password.',
+    );
+  }
+
+  const encryptedPassword = await bcrypt.hash(password, 10);
+
+  await UsersCollection.updateOne(
+    { _id: user._id },
+    { password: encryptedPassword },
+  );
+
+  await SessionsCollection.deleteOne({ userId: user._id });
 };

@@ -1,9 +1,11 @@
+import createHttpError from 'http-errors';
 import { TTL } from '../constants/contacts.js';
 import {
   loginUser,
   logoutUser,
   refreshUserSession,
   registerUser,
+  resetPassword,
   sendResetToken,
 } from '../services/auth.service.js';
 
@@ -66,9 +68,11 @@ export const refreshUserSessionController = async (req, res) => {
 };
 
 export const logoutUserController = async (req, res) => {
-  if (req.cookies.sessionId) {
-    await logoutUser(req.cookies.sessionId);
+  if (!req.cookies.sessionId) {
+    throw createHttpError(403, 'Missing header with authorization token.');
   }
+
+  await logoutUser(req.cookies.sessionId);
 
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
@@ -87,9 +91,12 @@ export const sendResetEmailController = async (req, res) => {
 };
 
 export const resetPasswordController = async (req, res) => {
+  const { token, password } = req.body;
+  await resetPassword(token, password);
+
   res.status(200).json({
     status: 200,
-    message: 'Password was successfully reset!',
+    message: 'Password has been successfully reset.',
     data: {},
   });
 };
